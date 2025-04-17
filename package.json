@@ -1,0 +1,13 @@
+{
+  "name": "automacao-drogasil",
+  "version": "1.0.0",
+  "description": "Automação para o sistema Terminal de Consulta da Drogasil",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "consultar": "node src/index.js"
+  },
+  "dependencies": {
+    "puppeteer": "^13.7.0"
+  }
+}

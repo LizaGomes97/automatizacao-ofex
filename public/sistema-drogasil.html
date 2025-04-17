@@ -1,0 +1,235 @@
+<!-- // public/sistema-drogasil-simples.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terminal de consulta - Drogasil (Simulação)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .barra-navegador {
+        background-color: #f5f5f5;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+      }
+      .logo-principal {
+        color: #c41e3a;
+        font-size: 24px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        margin: 20px;
+      }
+      .icone-logo {
+        width: 40px;
+        height: 40px;
+        background-color: #c41e3a;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 10px;
+      }
+      .barra-vermelha {
+        background-color: #c41e3a;
+        height: 50px;
+        width: 100%;
+      }
+      .secao-atendente,
+      .secao-cpf {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+      }
+      .botao-login {
+        background-color: #c41e3a;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 5px 10px;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+      .campo-input {
+        padding: 5px;
+        border: 1px solid #ccc;
+        width: 150px;
+      }
+      .info-loja {
+        text-align: right;
+        padding-right: 20px;
+        font-size: 14px;
+        margin-left: auto;
+      }
+      .rodape {
+        text-align: center;
+        color: #666;
+        padding: 10px;
+        border-top: 1px dotted #ccc;
+        font-size: 12px;
+      }
+      #paginaLogin,
+      #paginaPrincipal {
+        display: block;
+      }
+      #paginaPrincipal {
+        display: none;
+      }
+      .cliente-item {
+        background-color: #f5f5f5;
+        padding: 10px;
+        margin: 5px 0;
+        display: flex;
+        justify-content: space-between;
+      }
+      .status-aberto {
+        color: green;
+      }
+      .btn-atender {
+        background-color: white;
+        border: 1px solid #c41e3a;
+        color: #c41e3a;
+        padding: 3px 8px;
+        cursor: pointer;
+      }
+      .acoes {
+        margin-top: 20px;
+      }
+      .btn-imprimir {
+        background-color: #c41e3a;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Página de Login -->
+    <div id="paginaLogin">
+      <div class="barra-navegador">
+        <div>
+          🔒 Não seguro | tcdrsil.rd.com.br/portal/tc/default/AtendimentoWindow
+        </div>
+      </div>
+
+      <div class="logo-principal">
+        <div class="icone-logo">⚕️</div>
+        DROGASIL
+        <div class="info-loja">
+          Loja: 2309 - GUANAMBI 1<br />
+          Atendente:
+        </div>
+      </div>
+
+      <div class="barra-vermelha"></div>
+
+      <div class="secao-atendente">
+        <label for="matricula">Atendente:</label>
+        <input type="text" id="matricula" class="campo-input" />
+        <button id="btnLogin" class="botao-login">→</button>
+      </div>
+
+      <div class="rodape">
+        © 2025 RD SAÚDE S.A - Todos os direitos reservados.
+      </div>
+    </div>
+
+    <!-- Página Principal -->
+    <div id="paginaPrincipal">
+      <div class="barra-navegador">
+        <div>
+          🔒 Não seguro | tcdrsil.rd.com.br/portal/tc/default/AtendimentoWindow
+        </div>
+      </div>
+
+      <div class="logo-principal">
+        <div class="icone-logo">⚕️</div>
+        DROGASIL
+        <div class="info-loja">
+          Loja: 2309 - GUANAMBI 1<br />
+          Atendente: <span id="nomeAtendente">Lizandra</span>
+        </div>
+      </div>
+
+      <div class="barra-vermelha"></div>
+
+      <div class="secao-cpf">
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" class="campo-input" />
+        <button id="btnBuscar" class="botao-login">→</button>
+      </div>
+
+      <div id="resultadoBusca" style="padding: 0 20px">
+        <!-- Clientes serão exibidos aqui -->
+      </div>
+
+      <div class="acoes" style="padding: 0 20px; display: none">
+        <button id="btnImprimir" class="btn-imprimir">Imprimir OFEX</button>
+      </div>
+
+      <div class="rodape">
+        © 2025 RD SAÚDE S.A - Todos os direitos reservados.
+      </div>
+    </div>
+
+    <script>
+      // Simula o comportamento básico do sistema
+      document
+        .getElementById("btnLogin")
+        .addEventListener("click", function () {
+          const matricula = document.getElementById("matricula").value;
+          if (matricula) {
+            document.getElementById("paginaLogin").style.display = "none";
+            document.getElementById("paginaPrincipal").style.display = "block";
+          } else {
+            alert("Digite sua matrícula");
+          }
+        });
+
+      document
+        .getElementById("btnBuscar")
+        .addEventListener("click", function () {
+          const cpf = document.getElementById("cpf").value;
+          if (cpf) {
+            const resultadosDiv = document.getElementById("resultadoBusca");
+            resultadosDiv.innerHTML = `
+                    <h3>Clientes Encontrados:</h3>
+                    <div class="cliente-item">
+                        <div>JOÃO DA SILVA</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="status-aberto">● Em aberto</span>
+                            <button class="btn-atender">Atender</button>
+                        </div>
+                    </div>
+                `;
+
+            // Mostra as ações
+            document.querySelector(".acoes").style.display = "block";
+
+            // Adiciona evento ao botão atender
+            document
+              .querySelector(".btn-atender")
+              .addEventListener("click", function () {
+                alert("Cliente atendido!");
+              });
+
+            // Adiciona evento ao botão imprimir
+            document
+              .getElementById("btnImprimir")
+              .addEventListener("click", function () {
+                alert("Solicitação de impressão OFEX enviada!");
+              });
+          } else {
+            alert("Digite um CPF");
+          }
+        });
+    </script>
+  </body>
+</html>
