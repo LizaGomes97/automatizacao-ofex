@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drogasil Consulta - Mobile</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        background-color: #c41e3a;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo-icon {
+        width: 36px;
+        height: 36px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c41e3a;
+        margin-right: 10px;
+        font-size: 18px;
+      }
+
+      .content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      button {
+        background-color: #c41e3a;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 14px;
+        font-size: 16px;
+        width: 100%;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background-color: #a01930;
+      }
+
+      .message {
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+        text-align: center;
+      }
+
+      .success {
+        background-color: #e0ffe0;
+        color: #007700;
+        border: 1px solid #007700;
+      }
+
+      .error {
+        background-color: #ffe0e0;
+        color: #cc0000;
+        border: 1px solid #cc0000;
+      }
+
+      .info {
+        background-color: #e0f0ff;
+        color: #0066cc;
+        border: 1px solid #0066cc;
+      }
+
+      .status-panel {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .status-item {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .status-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .status-time {
+        color: #666;
+        font-size: 12px;
+      }
+
+      .status-message {
+        font-weight: bold;
+      }
+
+      .status-title {
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+        color: #444;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .centered {
+        text-align: center;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">
+          <div class="logo-icon">⚕️</div>
+          DROGASIL CONSULTA
+        </div>
+      </div>
+
+      <div class="content" id="loginScreen">
+        <h1>Acesso ao Sistema</h1>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="matricula">Digite sua matrícula:</label>
+            <input
+              type="text"
+              id="matricula"
+              name="matricula"
+              placeholder="Ex: 123456"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              required
+            />
+          </div>
+          <button type="submit">Entrar</button>
+        </form>
+      </div>
+
+      <div class="content hidden" id="cpfScreen">
+        <h1>Consulta de Cliente</h1>
+        <div class="centered">
+          <p>Matrícula: <strong id="matriculaDisplay"></strong></p>
+          <p id="terminalStatus" class="message info">Terminal não conectado</p>
+        </div>
+        <form id="cpfForm">
+          <div class="form-group">
+            <label for="cpf">Digite o CPF do cliente:</label>
+            <input
+              type="text"
+              id="cpf"
+              name="cpf"
+              placeholder="Ex: 12345678900"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              maxlength="11"
+              required
+            />
+            <small style="display: block; margin-top: 5px; color: #666"
+              >Digite apenas números (11 dígitos)</small
+            >
+          </div>
+          <button type="submit" id="btnEnviarCpf">Enviar CPF</button>
+        </form>
+        <div style="margin-top: 15px">
+          <button id="btnSair" style="background-color: #666">Sair</button>
+        </div>
+      </div>
+
+      <div class="content hidden" id="statusScreen">
+        <h1>Status da Consulta</h1>
+        <div id="consultaStatus" class="message info">
+          Aguardando processamento...
+        </div>
+
+        <div class="status-panel">
+          <div class="status-title">Logs da Execução:</div>
+          <div id="statusLogs">
+            <div class="status-item">
+              <div class="status-time">Aguardando início da execução...</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px">
+          <button id="btnNovaCpf">Nova Consulta</button>
+          <button
+            id="btnVoltarCpf"
+            style="background-color: #666; margin-top: 10px"
+          >
+            Voltar
+          </button>
+        </div>
+      </div>
+
+      <div class="footer">Drogasil Consulta Mobile - v1.0</div>
+    </div>
+
+    <script>
+      // Este código simula a conexão com o servidor
+      // Em um ambiente real, você usaria WebSockets ou chamadas de API
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Referências dos elementos
+        const loginScreen = document.getElementById("loginScreen");
+        const cpfScreen = document.getElementById("cpfScreen");
+        const statusScreen = document.getElementById("statusScreen");
+
+        const loginForm = document.getElementById("loginForm");
+        const cpfForm = document.getElementById("cpfForm");
+
+        const matriculaDisplay = document.getElementById("matriculaDisplay");
+        const terminalStatus = document.getElementById("terminalStatus");
+        const consultaStatus = document.getElementById("consultaStatus");
+        const statusLogs = document.getElementById("statusLogs");
+
+        const btnSair = document.getElementById("btnSair");
+        const btnNovaCpf = document.getElementById("btnNovaCpf");
+        const btnVoltarCpf = document.getElementById("btnVoltarCpf");
+
+        // ID único para esta sessão do dispositivo
+        const deviceId = generateUUID();
+
+        // Estado da aplicação
+        let appState = {
+          matricula: "",
+          isLoggedIn: false,
+          isTerminalConnected: false,
+          currentCpf: "",
+          isProcessing: false,
+        };
+
+        // Verificar e restaurar a sessão, se existir
+        restoreSession();
+
+        // Iniciar o polling para verificar o status do terminal
+        setInterval(checkTerminalStatus, 5000);
+
+        // Formulário de login
+        loginForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const matricula = document.getElementById("matricula").value.trim();
+
+          if (!matricula || !/^\d+$/.test(matricula)) {
+            showMessage(
+              "Por favor, digite uma matrícula válida (apenas números).",
+              "error"
+            );
+            return;
+          }
+
+          // Atualiza o estado
+          appState.matricula = matricula;
+          appState.isLoggedIn = true;
+
+          // Salva a sessão
+          saveSession();
+
+          // Atualiza a interface
+          matriculaDisplay.textContent = matricula;
+
+          // Muda para a tela de CPF
+          loginScreen.classList.add("hidden");
+          cpfScreen.classList.remove("hidden");
+
+          // Inicia a verificação do terminal
+          checkTerminalStatus();
+        });
+
+        // Formulário de CPF
+        cpfForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const cpf = document.getElementById("cpf").value.trim();
+
+          if (!cpf || !/^\d{11}$/.test(cpf)) {
+            showMessage(
+              "Por favor, digite um CPF válido (11 dígitos numéricos).",
+              "error"
+            );
+            return;
+          }
+
+          if (!appState.isTerminalConnected) {
+            showMessage(
+              "Terminal não está conectado. Tente novamente mais tarde.",
+              "error"
+            );
+            return;
+          }
+
+          // Atualiza o estado
+          appState.currentCpf = cpf;
+          appState.isProcessing = true;
+
+          // Envia o CPF para o terminal (simulado)
+          sendCpfToTerminal(cpf);
+
+          // Muda para a tela de status
+          cpfScreen.classList.add("hidden");
+          statusScreen.classList.remove("hidden");
+
+          // Inicia o monitoramento do status
+          monitorConsultaStatus();
+        });
+
+        // Botão de sair
+        btnSair.addEventListener("click", function () {
+          // Limpa a sessão
+          appState = {
+            matricula: "",
+            isLoggedIn: false,
+            isTerminalConnected: false,
+            currentCpf: "",
+            isProcessing: false,
+          };
+
+          // Limpa o armazenamento local
+          localStorage.removeItem("drogasilConsultaSession");
+
+          // Volta para a tela de login
+          cpfScreen.classList.add("hidden");
+          statusScreen.classList.add("hidden");
+          loginScreen.classList.remove("hidden");
+        });
+
+        // Botão de nova consulta
+        btnNovaCpf.addEventListener("click", function () {
+          // Limpa o CPF atual
+          document.getElementById("cpf").value = "";
+          appState.currentCpf = "";
+          appState.isProcessing = false;
+
+          // Volta para a tela de CPF
+          statusScreen.classList.add("hidden");
+          cpfScreen.classList.remove("hidden");
+        });
+
+        // Botão de voltar
+        btnVoltarCpf.addEventListener("click", function () {
+          // Volta para a tela de CPF
+          statusScreen.classList.add("hidden");
+          cpfScreen.classList.remove("hidden");
+        });
+
+        // Função para verificar o status do terminal
+        function checkTerminalStatus() {
+          if (!appState.isLoggedIn) return;
+
+          // Simulação: alternar entre conectado e não conectado
+          // Em um ambiente real, isso seria uma chamada de API
+          const simulatedConnected = Math.random() > 0.2; // 80% de chance de estar conectado
+
+          if (simulatedConnected) {
+            appState.isTerminalConnected = true;
+            terminalStatus.textContent = "Terminal conectado e pronto";
+            terminalStatus.className = "message success";
+          } else {
+            appState.isTerminalConnected = false;
+            terminalStatus.textContent = "Terminal não conectado";
+            terminalStatus.className = "message error";
+          }
+        }
+
+        // Função para enviar o CPF para o terminal
+        function sendCpfToTerminal(cpf) {
+          // Simulação: envia o CPF para o terminal
+          // Em um ambiente real, isso seria uma chamada de API ou WebSocket
+          console.log(
+            `Enviando CPF ${cpf} para o terminal (matrícula ${appState.matricula})`
+          );
+
+          // Adiciona mensagem de log
+          addStatusLog("Enviando CPF para o terminal...");
+
+          // Simulação de resposta do terminal
+          setTimeout(() => {
+            addStatusLog("CPF recebido pelo terminal");
+            addStatusLog("Iniciando consulta...");
+
+            // Simulação de consulta em andamento
+            setTimeout(() => {
+              addStatusLog("Realizando login no sistema...");
+
+              setTimeout(() => {
+                addStatusLog("Buscando cliente por CPF...");
+
+                setTimeout(() => {
+                  const success = Math.random() > 0.2; // 80% de chance de sucesso
+
+                  if (success) {
+                    addStatusLog("Cliente encontrado: JOÃO DA SILVA");
+                    addStatusLog("Status: Em aberto");
+                    addStatusLog("Cliente selecionado para atendimento");
+
+                    consultaStatus.textContent =
+                      "Consulta concluída com sucesso!";
+                    consultaStatus.className = "message success";
+                  } else {
+                    addStatusLog("Erro: Cliente não encontrado");
+
+                    consultaStatus.textContent =
+                      "Falha na consulta. CPF não encontrado.";
+                    consultaStatus.className = "message error";
+                  }
+
+                  appState.isProcessing = false;
+                }, 2000);
+              }, 1500);
+            }, 1000);
+          }, 1000);
+        }
+
+        // Função para monitorar o status da consulta
+        function monitorConsultaStatus() {
+          // Em um ambiente real, isso seria uma chamada de API ou WebSocket
+          // Aqui é apenas simulado no sendCpfToTerminal
+        }
+
+        // Função para adicionar log de status
+        function addStatusLog(message) {
+          const now = new Date();
+          const time = now.toLocaleTimeString();
+
+          const logItem = document.createElement("div");
+          logItem.className = "status-item";
+          logItem.innerHTML = `
+                    <div class="status-time">${time}</div>
+                    <div class="status-message">${message}</div>
+                `;
+
+          statusLogs.appendChild(logItem);
+        }
+
+        // Função para exibir uma mensagem
+        function showMessage(message, type = "info") {
+          const messageElement = document.createElement("div");
+          messageElement.className = `message ${type}`;
+          messageElement.textContent = message;
+          messageElement.style.marginBottom = "15px";
+
+          // Encontra o formulário ativo
+          const activeForm = document.querySelector("form:not(.hidden)");
+          if (activeForm) {
+            activeForm.insertAdjacentElement("beforebegin", messageElement);
+
+            // Remove após 5 segundos
+            setTimeout(() => {
+              messageElement.remove();
+            }, 5000);
+          }
+        }
+
+        // Funções de gerenciamento de sessão
+        function saveSession() {
+          localStorage.setItem(
+            "drogasilConsultaSession",
+            JSON.stringify({
+              matricula: appState.matricula,
+              deviceId: deviceId,
+            })
+          );
+        }
+
+        function restoreSession() {
+          const savedSession = localStorage.getItem("drogasilConsultaSession");
+          if (savedSession) {
+            try {
+              const session = JSON.parse(savedSession);
+              appState.matricula = session.matricula;
+              appState.isLoggedIn = true;
+
+              // Atualiza a interface
+              document.getElementById("matricula").value = appState.matricula;
+              matriculaDisplay.textContent = appState.matricula;
+
+              // Vai direto para a tela de CPF
+              loginScreen.classList.add("hidden");
+              cpfScreen.classList.remove("hidden");
+
+              // Verifica o status do terminal
+              checkTerminalStatus();
+            } catch (e) {
+              console.error("Erro ao restaurar sessão:", e);
+            }
+          }
+        }
+
+        // Função para gerar UUID
+        function generateUUID() {
+          return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+            /[xy]/g,
+            function (c) {
+              const r = (Math.random() * 16) | 0;
+              const v = c === "x" ? r : (r & 0x3) | 0x8;
+              return v.toString(16);
+            }
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
