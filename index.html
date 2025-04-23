@@ -195,56 +195,6 @@
         </div>
       </div>
     </div>
-    <script>
-      // Carregar o terminal
-      document.getElementById("btnCarregar").addEventListener("click", () => {
-        const url = document.getElementById("url").value.trim();
-
-        // Validar a URL
-        if (!url) {
-          // Adicionar mensagem ao log
-          const log = document.getElementById("log");
-          const horario = new Date().toLocaleTimeString();
-          const mensagem = `[${horario}] URL não informada!`;
-
-          const entry = document.createElement("div");
-          entry.className = "log-entry log-error";
-          entry.textContent = mensagem;
-
-          log.appendChild(entry);
-          log.scrollTop = log.scrollHeight;
-          return;
-        }
-
-        // Adicionar mensagem ao log
-        const log = document.getElementById("log");
-        const horario = new Date().toLocaleTimeString();
-        const mensagem = `[${horario}] Carregando terminal: ${url}`;
-
-        const entry = document.createElement("div");
-        entry.className = "log-entry log-info";
-        entry.textContent = mensagem;
-
-        log.appendChild(entry);
-
-        // Carregar a URL no iframe
-        document.getElementById("terminal").src = url;
-      });
-
-      // Função simples para limpar o log
-      document.getElementById("btnLimpar").addEventListener("click", () => {
-        document.getElementById("log").innerHTML = "";
-
-        // Adicionar mensagem de confirmação
-        const log = document.getElementById("log");
-        const horario = new Date().toLocaleTimeString();
-
-        const entry = document.createElement("div");
-        entry.className = "log-entry log-info";
-        entry.textContent = `[${horario}] Log limpo`;
-
-        log.appendChild(entry);
-      });
-    </script>
+    <script src="terminal-script.js"></script>
   </body>
 </html>
