@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interface Terminal Drogasil - Automação OFEX</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      .header {
+        background-color: #c41e3a;
+        color: white;
+        padding: 15px;
+        text-align: center;
+      }
+
+      .content {
+        display: flex;
+        flex: 1;
+      }
+
+      .terminal-container {
+        flex: 3;
+        border-right: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .controls {
+        padding: 10px;
+        background-color: #eee;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .terminal-frame {
+        flex: 1;
+        border: none;
+        width: 100%;
+        height: 100%;
+      }
+
+      .log-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+      }
+
+      .log-header {
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+      }
+
+      .log-content {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 8px 12px;
+        margin-right: 5px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .btn-success {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .btn-warning {
+        background-color: #ffc107;
+        color: #333;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .config-panel {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .config-panel input {
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 8px;
+      }
+
+      .log-entry {
+        margin-bottom: 5px;
+        padding: 3px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .log-info {
+        color: #0066cc;
+      }
+
+      .log-success {
+        color: #28a745;
+      }
+
+      .log-warning {
+        color: #ffc107;
+      }
+
+      .log-error {
+        color: #dc3545;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Automação Terminal Drogasil - OFEX</h1>
+      </div>
+
+      <div class="content">
+        <div class="terminal-container">
+          <div class="config-panel">
+            <label for="url">URL Terminal: </label>
+            <input
+              type="text"
+              id="url"
+              value="http://tcdrsil.rd.com.br/portal/tc/default"
+              style="width: 350px"
+            />
+            <button class="btn-primary" id="btnCarregar">
+              Carregar Terminal
+            </button>
+          </div>
+
+          <div class="controls">
+            <label for="matricula">Matrícula: </label>
+            <input type="text" id="matricula" value="309515" />
+
+            <label for="cpf">CPF: </label>
+            <input type="text" id="cpf" value="076.954.805-92" />
+
+            <button class="btn-success" id="btnIniciar">
+              Iniciar Automação
+            </button>
+            <button class="btn-danger" id="btnParar">Parar</button>
+          </div>
+
+          <iframe
+            id="terminal"
+            class="terminal-frame"
+            src="about:blank"
+          ></iframe>
+        </div>
+
+        <div class="log-container">
+          <div class="log-header">
+            Log de Execução
+            <button
+              class="btn-warning"
+              style="float: right; padding: 2px 8px"
+              id="btnLimpar"
+            >
+              Limpar
+            </button>
+          </div>
+          <div id="log" class="log-content">
+            <!-- Aqui serão inseridos os logs via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Carregar o terminal
+      document.getElementById("btnCarregar").addEventListener("click", () => {
+        const url = document.getElementById("url").value.trim();
+
+        // Validar a URL
+        if (!url) {
+          // Adicionar mensagem ao log
+          const log = document.getElementById("log");
+          const horario = new Date().toLocaleTimeString();
+          const mensagem = `[${horario}] URL não informada!`;
+
+          const entry = document.createElement("div");
+          entry.className = "log-entry log-error";
+          entry.textContent = mensagem;
+
+          log.appendChild(entry);
+          log.scrollTop = log.scrollHeight;
+          return;
+        }
+
+        // Adicionar mensagem ao log
+        const log = document.getElementById("log");
+        const horario = new Date().toLocaleTimeString();
+        const mensagem = `[${horario}] Carregando terminal: ${url}`;
+
+        const entry = document.createElement("div");
+        entry.className = "log-entry log-info";
+        entry.textContent = mensagem;
+
+        log.appendChild(entry);
+
+        // Carregar a URL no iframe
+        document.getElementById("terminal").src = url;
+      });
+
+      // Função simples para limpar o log
+      document.getElementById("btnLimpar").addEventListener("click", () => {
+        document.getElementById("log").innerHTML = "";
+
+        // Adicionar mensagem de confirmação
+        const log = document.getElementById("log");
+        const horario = new Date().toLocaleTimeString();
+
+        const entry = document.createElement("div");
+        entry.className = "log-entry log-info";
+        entry.textContent = `[${horario}] Log limpo`;
+
+        log.appendChild(entry);
+      });
+    </script>
+  </body>
+</html>
