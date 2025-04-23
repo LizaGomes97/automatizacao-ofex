@@ -1,0 +1,211 @@
+// Script Verificador de Terminal Drogasil (Cross-Tab)
+(function() {
+    console.clear();
+    console.log("%cVerificador de Terminal Drogasil - Multi-abas", "color: #C41E3A; font-size: 16px; font-weight: bold");
+    
+    // Configurar comunicação entre abas
+    window.DrogasilVerificador = {
+        // Função para descobrir se esta aba é do Terminal Drogasil
+        verificarAbaAtual: function() {
+            // Verificar elementos específicos
+            const elementosEspecificos = 
+                document.getElementById('txtAtendente') !== null ||
+                document.getElementById('txtCpfAtendimento') !== null ||
+                document.getElementById('buttonCliente') !== null ||
+                document.getElementById('oe') !== null ||
+                document.querySelector('.logo')?.textContent?.includes('DROGASIL') ||
+                document.title.includes('Drogasil') ||
+                document.title.includes('Terminal');
+                
+            // Verificar URL
+            const urlEspecifica = 
+                window.location.href.toLowerCase().includes('tcdrsil') || 
+                window.location.href.toLowerCase().includes('drogasil') ||
+                window.location.href.toLowerCase().includes('rd.com.br');
+                
+            return elementosEspecificos || urlEspecifica;
+        },
+        
+        // Iniciar processo de verificação
+        iniciar: function() {
+            // Verificar se esta aba é o Terminal
+            const ehTerminal = this.verificarAbaAtual();
+            
+            if (ehTerminal) {
+                console.log("✅ Esta aba é o Terminal Drogasil!");
+                
+                // Sinalizar para outras abas
+                localStorage.setItem('drogasil_terminal_encontrado', 'true');
+                localStorage.setItem('drogasil_terminal_id', Date.now().toString());
+                
+                // Aguardar comandos
+                this.escutarComandos();
+                
+                return true;
+            } else {
+                console.log("❌ Esta aba não é o Terminal Drogasil.");
+                console.log("Procurando por outras abas do Terminal...");
+                
+                // Tentar comunicação com outras abas
+                localStorage.setItem('drogasil_busca_terminal', Date.now().toString());
+                
+                // Verificar resposta após um tempo
+                setTimeout(() => {
+                    const terminalEncontrado = localStorage.getItem('drogasil_terminal_encontrado') === 'true';
+                    
+                    if (terminalEncontrado) {
+                        console.log("✅ Terminal Drogasil encontrado em outra aba!");
+                        console.log("Comandos podem ser enviados para essa aba.");
+                    } else {
+                        console.log("❌ Terminal Drogasil não encontrado em nenhuma aba aberta.");
+                        console.log("Por favor, abra o Terminal em outra aba e execute este script novamente.");
+                    }
+                }, 1000);
+                
+                // Iniciar escuta de respostas
+                this.escutarRespostas();
+                
+                return false;
+            }
+        },
+        
+        // Escutar comandos de outras abas
+        escutarComandos: function() {
+            console.log("Aguardando comandos de outras abas...");
+            
+            // Escuta por mudanças no localStorage
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'drogasil_comando') {
+                    try {
+                        const comando = JSON.parse(event.newValue);
+                        console.log("Comando recebido:", comando);
+                        
+                        // Executar o comando
+                        this.executarComando(comando);
+                        
+                        // Responder que foi concluído
+                        localStorage.setItem('drogasil_resposta', JSON.stringify({
+                            id: comando.id,
+                            sucesso: true,
+                            mensagem: "Comando executado com sucesso!"
+                        }));
+                    } catch (e) {
+                        console.error("Erro ao processar comando:", e);
+                    }
+                } else if (event.key === 'drogasil_busca_terminal') {
+                    // Responder que esta aba é o Terminal
+                    localStorage.setItem('drogasil_terminal_encontrado', 'true');
+                    localStorage.setItem('drogasil_terminal_id', Date.now().toString());
+                }
+            });
+        },
+        
+        // Escutar respostas de comandos
+        escutarRespostas: function() {
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'drogasil_resposta') {
+                    try {
+                        const resposta = JSON.parse(event.newValue);
+                        console.log("Resposta recebida:", resposta);
+                    } catch (e) {
+                        console.error("Erro ao processar resposta:", e);
+                    }
+                } else if (event.key === 'drogasil_terminal_encontrado') {
+                    console.log("✅ Terminal Drogasil encontrado em outra aba!");
+                }
+            });
+        },
+        
+        // Executar um comando recebido
+        executarComando: function(comando) {
+            console.log(`Executando comando: ${comando.tipo}`);
+            
+            // Executar comando com base no tipo
+            switch (comando.tipo) {
+                case 'login':
+                    this.executarLogin(comando.dados);
+                    break;
+                    
+                case 'buscar_cpf':
+                    this.executarBuscaCpf(comando.dados);
+                    break;
+                    
+                case 'clicar_botao':
+                    this.executarCliqueBotao(comando.dados);
+                    break;
+                    
+                default:
+                    console.log(`Comando desconhecido: ${comando.tipo}`);
+            }
+        },
+        
+        // Comando: Login
+        executarLogin: function(dados) {
+            const {matricula} = dados;
+            console.log(`Executando login com matrícula: ${matricula}`);
+            
+            // Lógica de login
+            const campoMatricula = document.getElementById('txtAtendente');
+            if (campoMatricula) {
+                campoMatricula.value = matricula;
+                campoMatricula.dispatchEvent(new Event('input', {bubbles: true}));
+                
+                setTimeout(() => {
+                    const botaoLogin = document.getElementById('buttonAtendente');
+                    if (botaoLogin) {
+                        botaoLogin.click();
+                    }
+                }, 500);
+            }
+        },
+        
+        // Comando: Buscar CPF
+        executarBuscaCpf: function(dados) {
+            const {cpf} = dados;
+            console.log(`Executando busca de CPF: ${cpf}`);
+            
+            // Lógica de busca CPF
+            const campoCpf = document.getElementById('txtCpfAtendimento');
+            if (campoCpf) {
+                campoCpf.value = cpf;
+                campoCpf.dispatchEvent(new Event('input', {bubbles: true}));
+                
+                setTimeout(() => {
+                    const botaoBusca = document.getElementById('buttonCliente');
+                    if (botaoBusca) {
+                        botaoBusca.click();
+                    }
+                }, 500);
+            }
+        },
+        
+        // Comando: Clicar em botão
+        executarCliqueBotao: function(dados) {
+            const {id} = dados;
+            console.log(`Executando clique no botão: ${id}`);
+            
+            // Lógica de clique
+            const botao = document.getElementById(id);
+            if (botao) {
+                botao.click();
+            }
+        },
+        
+        // Enviar comando para a aba do Terminal
+        enviarComando: function(tipo, dados) {
+            const comando = {
+                id: Date.now().toString(),
+                tipo: tipo,
+                dados: dados
+            };
+            
+            console.log(`Enviando comando: ${tipo}`);
+            localStorage.setItem('drogasil_comando', JSON.stringify(comando));
+            
+            return comando.id;
+        }
+    };
+    
+    // Iniciar verificador
+    return window.DrogasilVerificador.iniciar();
+})();

@@ -65,12 +65,6 @@
         margin-left: 10px;
         cursor: pointer;
       }
-      .campo-input {
-        padding: 8px;
-        border: 1px solid #ccc;
-        width: 200px;
-        border-radius: 3px;
-      }
       .info-loja {
         text-align: right;
         padding-right: 20px;
@@ -100,6 +94,32 @@
       .indicador-verde {
         color: green;
         margin-right: 5px;
+      }
+
+      /* Estilos para o formulário de login que correspondem ao original */
+      .miniLabel {
+        padding: 0 5px 0 0;
+        margin: 0;
+      }
+      #txtAtendente {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        font-size: 14px;
+      }
+      .input-container {
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        margin: 0;
+        padding: 5px;
+      }
+      .accessibility {
+        display: none;
+      }
+      .keyboard-focusable {
+        outline: none;
       }
 
       /* Estilos para a página principal */
@@ -186,14 +206,39 @@
       <div class="barra-vermelha"></div>
 
       <div class="secao-atendente">
-        <label for="matricula">Atendente:</label>
-        <input
-          type="text"
-          id="matricula"
-          class="campo-input"
-          placeholder="Digite sua matrícula"
-        />
-        <button id="btnLogin" class="botao-login">→</button>
+        <form name="formulario">
+          <div
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <label
+              class="miniLabel"
+              for="txtAtendente"
+              style="padding: 0 5px 0 0"
+              >Atendente:</label
+            >
+            <div style="display: flex">
+              <input
+                style="width: 100%"
+                type="text"
+                id="txtAtendente"
+                name="txtAtendente"
+                placeholder="Digite sua matrícula"
+                maxlength="8"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                class="keyboard-focusable"
+              />
+              <button
+                id="buttonAtendente"
+                class="fa fa-sign-in-alt botao-login"
+                onclick="buscarAtendente()"
+              >
+                →
+              </button>
+            </div>
+          </div>
+          <div id="atendimento" style="display: none"></div>
+        </form>
       </div>
 
       <div class="rodape">
@@ -415,17 +460,33 @@
     </div>
 
     <script>
-      // Script simples para alternar entre as páginas
+      // Script para alternar entre as páginas
+      function buscarAtendente() {
+        const matricula = document.getElementById("txtAtendente").value;
+        if (matricula.trim() !== "") {
+          document.getElementById("paginaLogin").style.display = "none";
+          document.getElementById("paginaPrincipal").style.display = "block";
+        } else {
+          alert("Por favor, insira sua matrícula!");
+        }
+        // Previne o comportamento padrão do formulário
+        return false;
+      }
+
+      // Adiciona o evento de submit ao formulário
       document
-        .getElementById("btnLogin")
-        .addEventListener("click", function () {
-          const matricula = document.getElementById("matricula").value;
-          if (matricula.trim() !== "") {
-            document.getElementById("paginaLogin").style.display = "none";
-            document.getElementById("paginaPrincipal").style.display = "block";
-          } else {
-            alert("Por favor, insira sua matrícula!");
-          }
+        .querySelector('form[name="formulario"]')
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          buscarAtendente();
+        });
+
+      // Configura o botão de login para chamar a função buscarAtendente
+      document
+        .getElementById("buttonAtendente")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          buscarAtendente();
         });
 
       // Funcionalidade de busca por CPF
@@ -440,18 +501,18 @@
                 "\nEsta funcionalidade está em simulação."
             );
 
-            // Você poderia adicionar código para simular a adição de um novo cliente à lista
+            // Adiciona um novo cliente simulado à lista
             const listaClientes = document.getElementById("listaClientes");
             const novoCliente = document.createElement("div");
             novoCliente.className = "cliente-item";
             novoCliente.innerHTML = `
-                    <div>CLIENTE ${cpf} (SIMULADO)</div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span class="status-aberto">● Em aberto</span>
-                        <button class="btn-atender">Atender</button>
-                        <span>⊗</span>
-                    </div>
-                `;
+            <div>CLIENTE ${cpf} (SIMULADO)</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="status-aberto">● Em aberto</span>
+              <button class="btn-atender">Atender</button>
+              <span>⊗</span>
+            </div>
+          `;
             listaClientes.prepend(novoCliente);
 
             // Adiciona evento ao novo botão atender
